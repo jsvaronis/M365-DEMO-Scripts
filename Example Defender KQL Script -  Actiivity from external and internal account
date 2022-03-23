@@ -1,0 +1,5 @@
+let startTime = ago(7d);
+let endTime = now();
+CloudAppEvents
+| where Timestamp between(startTime .. endTime)
+| where (RawEventData contains "chris.green.007@hotmail.com" or RawEventData contains "cgreen@saw777.onmicrosoft.com")
