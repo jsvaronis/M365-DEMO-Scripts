@@ -1,0 +1,15 @@
+let emptyTable = datatable(Type: string, TimeGenerated: datetime)[];
+let Operations = dynamic(["FileDownloaded"]);
+let UserOperationToSharePoint =  (v_Account_Name: string, v_Account_UPNSuffix: string) {
+    OfficeActivity
+    // Select sharepoint activity that is relevant
+    | where RecordType in~ ('SharePointFileOperation')
+    | where Operation in~ (Operations)
+    | extend Account_Name = tostring(split(UserId, '@')[0])
+    | extend Account_UPNSuffix = tostring(split(UserId, '@')[1])
+    | where Account_Name =~ v_Account_Name and Account_UPNSuffix =~ v_Account_UPNSuffix
+    | project TimeGenerated, Account_Name, Account_UPNSuffix, UserId, OfficeId, RecordType, Operation, OrganizationId, UserType, UserKey, OfficeWorkload, OfficeObjectId, ClientIP, ItemType, UserAgent, Site_Url, SourceRelativeUrl, SourceFileName, SourceFileExtension, Start_Time, ElevationTime, TenantId, SourceSystem, Type
+};
+UserOperationToSharePoint ('cgreen', 'saw777.onmicrosoft.com')
+| where Operation =~ 'FileDownloaded'
+| where TimeGenerated > ago(7d)
